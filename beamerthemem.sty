@@ -153,6 +153,7 @@
 %{{{ --- Progressbar ------------------
 
 \makeatletter
+\def\progressbar@subsectionprogressbar{}
 \def\progressbar@sectionprogressbar{}
 \def\progressbar@titleprogressbar{}
 \newcount\progressbar@tmpcounta % auxiliary counter
@@ -164,7 +165,34 @@
 \progressbar@pbwd=22em
 \progressbar@pbht=0.4pt
 
-% the progress bar
+% the progress bars
+\def\progressbar@subsectionprogressbar{%
+  {\usebeamercolor{palette primary}%
+    \progressbar@tmpcounta=\insertframenumber
+    \progressbar@tmpcountb=\inserttotalframenumber
+    \progressbar@tmpdim=\progressbar@pbwd
+    \divide\progressbar@tmpdim by 100
+    \multiply\progressbar@tmpdim by \progressbar@tmpcounta
+    \divide\progressbar@tmpdim by \progressbar@tmpcountb
+    \multiply\progressbar@tmpdim by 100
+
+    % fixes very high linespacing introduced via \textsc{\MakeLowercase{...}}
+    \fontsize{1em}{1em}\selectfont
+
+    \makebox[\textwidth][c]{
+      \begin{tikzpicture}[tight background]
+
+        \node[anchor=south west, fg, inner sep=0pt, text width=\progressbar@pbwd] at (0pt, 0pt) {\insertsectionHEAD: \insertsubsectionHEAD};
+
+        \draw[anchor=west, fg!20, fill=fg!20, inner sep=0pt]
+        (0, -1ex) rectangle ++ (\progressbar@pbwd, \progressbar@pbht);
+
+        \draw[anchor=west, fg, fill=fg, inner sep=0pt]
+        (0, -1ex) rectangle ++ (\progressbar@tmpdim, \progressbar@pbht);
+      \end{tikzpicture}%
+    }
+  } % end usebeamercolor{palette primary}
+}
 \def\progressbar@sectionprogressbar{%
   {\usebeamercolor{palette primary}%
     \progressbar@tmpcounta=\insertframenumber
@@ -217,11 +245,15 @@
 
 \newcommand{\insertsectionHEAD}{%
   \expandafter\insertsectionHEADaux\insertsectionhead}
+\newcommand{\insertsubsectionHEAD}{%
+  \expandafter\insertsubsectionHEADaux\insertsubsectionhead}
 
 \if@noSmallCapitals%
 \newcommand{\insertsectionHEADaux}[3]{#3}%
+\newcommand{\insertsubsectionHEADaux}[3]{#3}%
 \else%
 \newcommand{\insertsectionHEADaux}[3]{\textsc{\MakeLowercase{#3}}}%
+\newcommand{\insertsubsectionHEADaux}[3]{\textsc{\MakeLowercase{#3}}}%
 \fi%
 
 \newcommand{\plain}[2][]{%
@@ -254,6 +286,19 @@
 %{{{ --- Sections ---------------------
 
 % Insert frame with section title at every section start
+\AtBeginSubsection[]
+{
+  \if@noSectionSlide%
+  \else%
+  \begingroup
+  \setbeamercolor{background canvas}{parent=palette primary}
+  \begin{frame}[plain]
+    \vspace{2em}\usebeamerfont{subsection title}
+    \progressbar@subsectionprogressbar%
+  \end{frame}
+  \endgroup
+  \fi%
+}
 \AtBeginSection[]
 {
   \if@noSectionSlide%
