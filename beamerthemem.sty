@@ -177,15 +177,11 @@
 
 \newcommand{\insertsectionHEAD}{%
   \expandafter\insertsectionHEADaux\insertsectionhead}
-\newcommand{\insertsubsectionHEAD}{%
-  \expandafter\insertsubsectionHEADaux\insertsubsectionhead}
 
 \if@noSmallCapitals%
 \newcommand{\insertsectionHEADaux}[3]{#3}%
-\newcommand{\insertsubsectionHEADaux}[3]{#3}%
 \else%
 \newcommand{\insertsectionHEADaux}[3]{\textsc{\MakeLowercase{#3}}}%
-\newcommand{\insertsubsectionHEADaux}[3]{\textsc{\MakeLowercase{#3}}}%
 \fi%
 
 \newcommand{\plain}[2][]{%
